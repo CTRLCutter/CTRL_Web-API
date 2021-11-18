@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
 @Service
 public class UserService {
@@ -38,7 +39,7 @@ public class UserService {
 
     public void createUser(User user) {
         user.setPassword(this.bCrypt.encode(user.getPassword()));
-        user.setRegistration_date(new Date(System.currentTimeMillis()));
+        user.setRegistration_date(new Timestamp(Calendar.getInstance().getTime().getTime()));
 
         this.userRepository.save(user);
     }

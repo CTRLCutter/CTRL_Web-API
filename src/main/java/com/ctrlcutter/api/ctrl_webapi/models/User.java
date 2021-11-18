@@ -6,7 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class User {
@@ -21,12 +21,12 @@ public class User {
     @Column(nullable = false)
     private String password;
     @DateTimeFormat(pattern = "yyyy-MM-dd' T 'hh:mm:ss")
-    private Date registration_date;
+    private Timestamp registration_date;
 
     public User() {
     }
 
-    public User(String username, String email, String password, Date registration_date) {
+    public User(String username, String email, String password, Timestamp registration_date) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -65,11 +65,11 @@ public class User {
         this.password = password;
     }
 
-    public Date getRegistration_date() {
+    public Timestamp getRegistration_date() {
         return this.registration_date;
     }
 
-    public void setRegistration_date(Date registration_date) {
+    public void setRegistration_date(Timestamp registration_date) {
         this.registration_date = registration_date;
     }
 

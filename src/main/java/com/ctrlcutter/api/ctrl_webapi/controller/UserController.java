@@ -40,4 +40,10 @@ public class UserController {
 
         return new ResponseEntity<>("User created!", HttpStatus.OK);
     }
+
+
+    //@PostMapping(value = "/login", produces = "application/json")
+    //public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
+
+    //}
 }
