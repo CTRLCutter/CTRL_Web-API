@@ -1,20 +1,24 @@
 package com.ctrlcutter.api.ctrl_webapi.helper;
 
+import org.springframework.lang.NonNull;
+
 public class LoginForm {
-    private String username;
+    @NonNull
+    private String email;
+    @NonNull
     private String password;
 
-    public LoginForm(String username, String password) {
-        this.username = username;
+    public LoginForm(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 
-    public String getUsername() {
-        return this.username;
+    public String getEmail() {
+        return this.email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

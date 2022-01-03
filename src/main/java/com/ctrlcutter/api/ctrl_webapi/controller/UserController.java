@@ -1,6 +1,7 @@
 package com.ctrlcutter.api.ctrl_webapi.controller;
 
 import com.ctrlcutter.api.ctrl_webapi.helper.ExistingParameters;
+import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
 import com.ctrlcutter.api.ctrl_webapi.models.User;
 import com.ctrlcutter.api.ctrl_webapi.services.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,7 @@ public class UserController {
             return new ResponseEntity<>("Missing data(username, email or password)!", HttpStatus.BAD_REQUEST);
         }
 
-        ExistingParameters parameters = this.userService.userExists(user.getUsername(), user.getEmail());
+        ExistingParameters parameters = this.userService.parametersExist(user.getUsername(), user.getEmail());
 
         if (parameters.areExisting()) {
             return new ResponseEntity<>(parameters.getParameters(), HttpStatus.BAD_REQUEST);
@@ -42,8 +43,21 @@ public class UserController {
     }
 
 
-    //@PostMapping(value = "/login", produces = "application/json")
-    //public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
+    @PostMapping(value = "/login", produces = "application/json")
+    public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
 
-    //}
+        if (StringUtils.isEmpty(loginForm.getEmail()) | StringUtils.isEmpty(loginForm.getPassword())) {
+            return new ResponseEntity<>("Missing login parameters(email, password", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!this.userService.userExists(loginForm.getEmail())) {
+            return new ResponseEntity<>("User does not exist.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (this.userService.loginUser(loginForm)) {
+            return new ResponseEntity<>("User successfully logged in!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Login failed. Wrong password!", HttpStatus.BAD_REQUEST);
+        }
+    }
 }

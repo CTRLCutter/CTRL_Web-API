@@ -1,6 +1,7 @@
 package com.ctrlcutter.api.ctrl_webapi.services;
 
 import com.ctrlcutter.api.ctrl_webapi.helper.ExistingParameters;
+import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
 import com.ctrlcutter.api.ctrl_webapi.models.User;
 import com.ctrlcutter.api.ctrl_webapi.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public ExistingParameters userExists(String username, String email) {
+    public ExistingParameters parametersExist(String username, String email) {
         ExistingParameters existingParameters = new ExistingParameters();
 
         if (this.userRepository.existsUserByUsername(username)) {
@@ -42,5 +43,13 @@ public class UserService {
         user.setRegistration_date(new Timestamp(Calendar.getInstance().getTime().getTime()));
 
         this.userRepository.save(user);
+    }
+
+    public boolean userExists(String email) {
+        return this.userRepository.existsUserByEmail(email);
+    }
+
+    public boolean loginUser(LoginForm loginForm) {
+        return this.bCrypt.matches(loginForm.getPassword(), this.userRepository.getUserByEmail(loginForm.getEmail()).getPassword());
     }
 }
