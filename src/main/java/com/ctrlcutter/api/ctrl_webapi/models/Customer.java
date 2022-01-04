@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Entity
-public class User {
+public class Customer {
 
     @Id
     @GeneratedValue
@@ -23,10 +23,10 @@ public class User {
     @DateTimeFormat(pattern = "yyyy-MM-dd' T 'hh:mm:ss")
     private Timestamp registration_date;
 
-    public User() {
+    public Customer() {
     }
 
-    public User(String username, String email, String password, Timestamp registration_date) {
+    public Customer(String username, String email, String password, Timestamp registration_date) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -75,6 +75,6 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" + "id=" + this.id + ", username='" + this.username + "', email='" + this.email + "', registration_date='" + this.registration_date + "'}";
+        return "Customer{" + "id=" + this.id + ", username='" + this.username + "', email='" + this.email + "', registration_date='" + this.registration_date + "'}";
     }
 }
