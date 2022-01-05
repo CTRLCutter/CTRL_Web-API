@@ -29,7 +29,31 @@ public class SignUpTest {
     public void missingDataTest() throws Exception {
         this.mockMvc.perform(post("/customer/signup")
                 .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"email\": \"mail@seufert.tech\", \"password\": \"test123\"}")
+        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password)!")));
+
+        this.mockMvc.perform(post("/customer/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"Lorenz\", \"password\": \"test123\"}")
+        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password)!")));
+
+        this.mockMvc.perform(post("/customer/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"Lorenz\", \"email\": \"mail@seufert.tech\"}")
+        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password)!")));
+    }
+
+    @Test
+    @WithMockUser(username = "ctrlcutter", password = "test123")
+    public void createCustomerTest() throws Exception {
+        this.mockMvc.perform(post("/customer/signup")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"Lorenz\", \"email\": \"mail@seufert.tech\", \"password\": \"test123\"}")
+        ).andExpect(status().isOk()).andExpect(content().string(containsString("Customer created!")));
+
+        this.mockMvc.perform(post("/customer/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\": \"Tom\", \"email\": \"tom@seufert.tech\", \"password\": \"password12356789test100\"}")
         ).andExpect(status().isOk()).andExpect(content().string(containsString("Customer created!")));
     }
 }
