@@ -7,6 +7,7 @@ import com.ctrlcutter.api.ctrl_webapi.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -43,6 +44,11 @@ public class CustomerService {
         customer.setRegistration_date(new Timestamp(Calendar.getInstance().getTime().getTime()));
 
         this.customerRepository.save(customer);
+    }
+
+    @Transactional
+    public void deleteCustomer(String username, String email) {
+        this.customerRepository.deleteCustomerByUsernameAndEmail(username, email);
     }
 
     public boolean customerExists(String email) {

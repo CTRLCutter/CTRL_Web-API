@@ -10,4 +10,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     boolean existsCustomerByEmail(String email);
 
     Customer getCustomerByEmail(String email);
+
+    void deleteCustomerByUsernameAndEmail(String username, String email);
 }
