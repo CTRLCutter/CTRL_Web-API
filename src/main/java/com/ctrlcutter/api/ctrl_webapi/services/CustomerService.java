@@ -16,11 +16,13 @@ import java.util.Calendar;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final SessionService sessionService;
     BCryptPasswordEncoder bCrypt = new BCryptPasswordEncoder();
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, SessionService sessionService) {
         this.customerRepository = customerRepository;
+        this.sessionService = sessionService;
     }
 
     public ExistingParameters parametersExist(String username, String email) {
@@ -39,11 +41,14 @@ public class CustomerService {
         return existingParameters;
     }
 
-    public void createCustomer(Customer customer) {
+    public String createCustomer(Customer customer) {
         customer.setPassword(this.bCrypt.encode(customer.getPassword()));
         customer.setRegistration_date(new Timestamp(Calendar.getInstance().getTime().getTime()));
 
         this.customerRepository.save(customer);
+        String sessionKey = this.sessionService.createSession(customer);
+
+        return sessionKey;
     }
 
     @Transactional

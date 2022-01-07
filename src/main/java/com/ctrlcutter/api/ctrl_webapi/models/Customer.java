@@ -2,26 +2,31 @@ package com.ctrlcutter.api.ctrl_webapi.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
 public class Customer {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "customer_id")
     private Long id;
+
     @Column(nullable = false, unique = true)
     private String username;
+
     @Column(nullable = false, unique = true)
     private String email;
+
     @Column(nullable = false)
     private String password;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd' T 'hh:mm:ss")
     private Timestamp registration_date;
+
+    @OneToOne(mappedBy = "customer")
+    private Session session;
 
     public Customer() {
     }

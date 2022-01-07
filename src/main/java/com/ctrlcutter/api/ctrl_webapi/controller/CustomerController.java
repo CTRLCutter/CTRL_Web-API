@@ -37,9 +37,9 @@ public class CustomerController {
             return new ResponseEntity<>(parameters.getParameters(), HttpStatus.BAD_REQUEST);
         }
 
-        this.customerService.createCustomer(customer);
+        String sessionKey = this.customerService.createCustomer(customer);
 
-        return new ResponseEntity<>("Customer created!", HttpStatus.OK);
+        return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
     }
 
 
