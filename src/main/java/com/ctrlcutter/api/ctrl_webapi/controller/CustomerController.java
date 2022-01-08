@@ -8,10 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/customer")
@@ -54,10 +53,23 @@ public class CustomerController {
             return new ResponseEntity<>("Customer does not exist.", HttpStatus.BAD_REQUEST);
         }
 
-        if (this.customerService.loginCustomer(loginForm)) {
-            return new ResponseEntity<>("Customer successfully logged in!", HttpStatus.OK);
+        String sessionKey = this.customerService.loginCustomer(loginForm);
+
+        if (sessionKey != null) {
+            return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Login failed. Wrong password!", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping(value = "/customerData", produces = "application/json")
+    public ResponseEntity<Object> customerData(@RequestHeader Map<String, String> header) {
+        String sessionKey = header.get("sessionkey");
+
+        if (sessionKey == null) {
+            return new ResponseEntity<>("Session key not provided. Try again", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
     }
 }

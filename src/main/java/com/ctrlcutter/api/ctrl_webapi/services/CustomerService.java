@@ -46,9 +46,8 @@ public class CustomerService {
         customer.setRegistration_date(new Timestamp(Calendar.getInstance().getTime().getTime()));
 
         this.customerRepository.save(customer);
-        String sessionKey = this.sessionService.createSession(customer);
 
-        return sessionKey;
+        return this.sessionService.createSession(customer);
     }
 
     @Transactional
@@ -60,7 +59,13 @@ public class CustomerService {
         return this.customerRepository.existsCustomerByEmail(email);
     }
 
-    public boolean loginCustomer(LoginForm loginForm) {
-        return this.bCrypt.matches(loginForm.getPassword(), this.customerRepository.getCustomerByEmail(loginForm.getEmail()).getPassword());
+    public String loginCustomer(LoginForm loginForm) {
+        Customer customer = this.customerRepository.getCustomerByEmail(loginForm.getEmail());
+
+        if (this.bCrypt.matches(loginForm.getPassword(), customer.getPassword())) {
+            return this.sessionService.createSession(customer);
+        } else {
+            return null;
+        }
     }
 }
