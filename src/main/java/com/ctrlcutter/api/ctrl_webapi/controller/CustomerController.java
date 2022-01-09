@@ -27,7 +27,7 @@ public class CustomerController {
     public ResponseEntity<Object> signup(@RequestBody Customer customer) {
 
         if (StringUtils.isEmpty(customer.getUsername()) | StringUtils.isEmpty(customer.getEmail()) | StringUtils.isEmpty(customer.getPassword())) {
-            return new ResponseEntity<>("Missing data(username, email or password)!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Missing data(username, email or password).", HttpStatus.BAD_REQUEST);
         }
 
         ExistingParameters parameters = this.customerService.parametersExist(customer.getUsername(), customer.getEmail());
@@ -46,7 +46,7 @@ public class CustomerController {
     public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
 
         if (StringUtils.isEmpty(loginForm.getEmail()) | StringUtils.isEmpty(loginForm.getPassword())) {
-            return new ResponseEntity<>("Missing login parameters(email, password)!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Missing login parameters(email, password).", HttpStatus.BAD_REQUEST);
         }
 
         if (!this.customerService.customerExists(loginForm.getEmail())) {
@@ -58,7 +58,7 @@ public class CustomerController {
         if (sessionKey != null) {
             return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Login failed. Wrong password!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Login failed. Wrong password.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,6 +70,12 @@ public class CustomerController {
             return new ResponseEntity<>("Session key not provided. Try again", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
+        Customer customer = this.customerService.getCustomerData(sessionKey);
+
+        if (customer == null) {
+            return new ResponseEntity<>("Session invalid", HttpStatus.UNAUTHORIZED);
+        } else {
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        }
     }
 }

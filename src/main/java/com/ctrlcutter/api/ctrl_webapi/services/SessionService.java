@@ -36,7 +36,18 @@ public class SessionService {
         return uuid.toString();
     }
 
-    //TODO delete Session
+    public boolean checkSessionValidity(String sessionKey) {
+        if (this.sessionRepository.existsSession(sessionKey) == 1) {
+            Timestamp sessionValidUntil = this.sessionRepository.getSession(sessionKey).getValid_until();
 
-    //TODO check if Session exists
+            return sessionValidUntil.after(new Timestamp(Calendar.getInstance().getTime().getTime()));
+        }
+        return false;
+    }
+
+    public Customer getCustomerBySessionKey(String sessionKey) {
+        return this.sessionRepository.getSession(sessionKey).getCustomer();
+    }
+
+    //TODO delete Session
 }

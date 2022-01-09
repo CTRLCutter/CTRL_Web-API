@@ -68,4 +68,15 @@ public class CustomerService {
             return null;
         }
     }
+
+    public Customer getCustomerData(String sessionKey) {
+        if (this.sessionService.checkSessionValidity(sessionKey)) {
+            Customer customer = this.sessionService.getCustomerBySessionKey(sessionKey);
+            customer.setPassword(null);
+
+            return customer;
+        } else {
+            return null;
+        }
+    }
 }
