@@ -69,6 +69,10 @@ public class CustomerService {
         }
     }
 
+    public void logoutCustomer(String sessionkey) {
+        this.sessionService.deleteSession(sessionkey);
+    }
+
     public Customer getCustomerData(String sessionKey) {
         if (this.sessionService.checkSessionValidity(sessionKey)) {
             Customer customer = this.sessionService.getCustomerBySessionKey(sessionKey);

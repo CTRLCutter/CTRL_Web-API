@@ -41,7 +41,7 @@ public class CustomerController {
         return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
     }
 
-
+    //TODO bei login nur eine session zulassen. nicht mehrere einträge in tabelle generieren lassen
     @PostMapping(value = "/login", produces = "application/json")
     public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
 
@@ -60,6 +60,19 @@ public class CustomerController {
         } else {
             return new ResponseEntity<>("Login failed. Wrong password.", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping(value = "/logout", produces = "application/json")
+    public ResponseEntity<Object> logout(@RequestHeader Map<String, String> header) {
+        String sessionKey = header.get("sessionkey");
+
+        if (sessionKey == null) {
+            return new ResponseEntity<>("Session key not provided. Try again", HttpStatus.BAD_REQUEST);
+        }
+
+        this.customerService.logoutCustomer(sessionKey);
+
+        return new ResponseEntity<>("Successfully logged out and deleted all sessions.", HttpStatus.OK);
     }
 
     @PostMapping(value = "/customerData", produces = "application/json")

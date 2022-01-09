@@ -5,6 +5,7 @@ import com.ctrlcutter.api.ctrl_webapi.models.Session;
 import com.ctrlcutter.api.ctrl_webapi.repositories.SessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -36,11 +37,17 @@ public class SessionService {
         return uuid.toString();
     }
 
+    @Transactional
     public boolean checkSessionValidity(String sessionKey) {
         if (this.sessionRepository.existsSession(sessionKey) == 1) {
             Timestamp sessionValidUntil = this.sessionRepository.getSession(sessionKey).getValid_until();
 
-            return sessionValidUntil.after(new Timestamp(Calendar.getInstance().getTime().getTime()));
+            if (sessionValidUntil.after(new Timestamp(Calendar.getInstance().getTime().getTime()))) {
+                return true;
+            } else {
+                this.deleteSession(sessionKey);
+                return false;
+            }
         }
         return false;
     }
@@ -49,5 +56,8 @@ public class SessionService {
         return this.sessionRepository.getSession(sessionKey).getCustomer();
     }
 
-    //TODO delete Session
+    @Transactional
+    public void deleteSession(String sessionKey) {
+        this.sessionRepository.deleteSession(sessionKey);
+    }
 }
