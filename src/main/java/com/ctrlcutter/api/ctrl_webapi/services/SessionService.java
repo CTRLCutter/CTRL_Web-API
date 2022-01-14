@@ -52,6 +52,20 @@ public class SessionService {
         return false;
     }
 
+    @Transactional
+    public String getSessionKeyByCustomer(Customer customer) {
+        if (this.sessionRepository.existsSessionByCustomer(customer) == 1) {
+            String sessionKey = this.sessionRepository.getSessionByCustomer(customer).getSession_key();
+
+            if (this.checkSessionValidity(sessionKey)) {
+                return sessionKey;
+            } else {
+                return this.createSession(customer);
+            }
+        }
+        return this.createSession(customer);
+    }
+
     public Customer getCustomerBySessionKey(String sessionKey) {
         return this.sessionRepository.getSession(sessionKey).getCustomer();
     }

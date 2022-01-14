@@ -63,7 +63,7 @@ public class CustomerService {
         Customer customer = this.customerRepository.getCustomerByEmail(loginForm.getEmail());
 
         if (this.bCrypt.matches(loginForm.getPassword(), customer.getPassword())) {
-            return this.sessionService.createSession(customer);
+            return this.sessionService.getSessionKeyByCustomer(customer);
         } else {
             return null;
         }

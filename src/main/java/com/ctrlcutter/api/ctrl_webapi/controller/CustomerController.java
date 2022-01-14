@@ -41,7 +41,6 @@ public class CustomerController {
         return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
     }
 
-    //TODO bei login nur eine session zulassen. nicht mehrere einträge in tabelle generieren lassen
     @PostMapping(value = "/login", produces = "application/json")
     public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
 
