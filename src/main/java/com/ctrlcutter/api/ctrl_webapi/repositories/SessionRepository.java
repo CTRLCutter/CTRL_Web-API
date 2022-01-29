@@ -2,11 +2,13 @@ package com.ctrlcutter.api.ctrl_webapi.repositories;
 
 import com.ctrlcutter.api.ctrl_webapi.models.Customer;
 import com.ctrlcutter.api.ctrl_webapi.models.Session;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface SessionRepository extends JpaRepository<Session, Long> {
+@Repository
+public interface SessionRepository extends CrudRepository<Session, Long> {
 
 
     @Query(value = "SELECT EXISTS (SELECT * FROM sessions WHERE session_key = ?1)", nativeQuery = true)

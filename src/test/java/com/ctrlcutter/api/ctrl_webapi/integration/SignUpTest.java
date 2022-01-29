@@ -2,7 +2,7 @@ package com.ctrlcutter.api.ctrl_webapi.integration;
 
 import com.ctrlcutter.api.ctrl_webapi.CtrlWebApiApplication;
 import com.ctrlcutter.api.ctrl_webapi.models.Customer;
-import com.ctrlcutter.api.ctrl_webapi.services.CustomerService;
+import com.ctrlcutter.api.ctrl_webapi.repositories.CustomerRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,17 +29,17 @@ public class SignUpTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private CustomerService customerService;
+    private CustomerRepository customerRepository;
 
     @BeforeEach
     public void init() {
         Customer customer = new Customer("Krissi", "krissi@seufert.tech", "password123", null);
-        this.customerService.createCustomer(customer);
+        this.customerRepository.save(customer);
     }
 
     @AfterEach
     public void terminate() {
-        this.customerService.deleteCustomer("Krissi", "krissi@seufert.tech");
+        this.customerRepository.deleteCustomerByUsernameAndEmail("Krissi", "krissi@seufert.tech");
     }
 
 
@@ -49,17 +50,17 @@ public class SignUpTest {
         this.mockMvc.perform(post("/customer/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"mail@seufert.tech\", \"password\": \"test123\"}")
-        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password)!")));
+        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password).")));
 
         this.mockMvc.perform(post("/customer/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"Lorenz\", \"password\": \"test123\"}")
-        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password)!")));
+        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password).")));
 
         this.mockMvc.perform(post("/customer/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"Lorenz\", \"email\": \"mail@seufert.tech\"}")
-        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password)!")));
+        ).andExpect(status().isBadRequest()).andExpect(content().string(containsString("Missing data(username, email or password).")));
     }
 
     @Test
@@ -89,11 +90,11 @@ public class SignUpTest {
         this.mockMvc.perform(post("/customer/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"Nico\", \"email\": \"nico@seufert.tech\", \"password\": \"test123\"}")
-        ).andExpect(status().isOk()).andExpect(content().string(containsString("Customer created!")));
+        ).andExpect(status().isOk()).andExpect(content().string(matchesPattern("^\\{\"session_key\": \"[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\"}$")));
 
         this.mockMvc.perform(post("/customer/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"Patrick\", \"email\": \"patrick@seufert.tech\", \"password\": \"password12356789test100\"}")
-        ).andExpect(status().isOk()).andExpect(content().string(containsString("Customer created!")));
+        ).andExpect(status().isOk()).andExpect(content().string(matchesPattern("^\\{\"session_key\": \"[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\"}$")));
     }
 }
