@@ -1,16 +1,18 @@
 package com.ctrlcutter.api.ctrl_webapi.services;
 
-import com.ctrlcutter.api.ctrl_webapi.helper.ExistingParameters;
-import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
-import com.ctrlcutter.api.ctrl_webapi.models.Customer;
-import com.ctrlcutter.api.ctrl_webapi.repositories.CustomerRepository;
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
+import com.ctrlcutter.api.ctrl_webapi.dto.CustomerDTO;
+import com.ctrlcutter.api.ctrl_webapi.helper.ExistingParameters;
+import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
+import com.ctrlcutter.api.ctrl_webapi.models.Customer;
+import com.ctrlcutter.api.ctrl_webapi.repositories.CustomerRepository;
 
 @Service
 public class CustomerService {
@@ -73,12 +75,11 @@ public class CustomerService {
         this.sessionService.deleteSession(sessionkey);
     }
 
-    public Customer getCustomerData(String sessionKey) {
+    public CustomerDTO getCustomerData(String sessionKey) {
         if (this.sessionService.checkSessionValidity(sessionKey)) {
             Customer customer = this.sessionService.getCustomerBySessionKey(sessionKey);
-            customer.setPassword(null);
 
-            return customer;
+            return new CustomerDTO(customer.getId(), customer.getUsername(), customer.getEmail(), customer.getRegistration_date());
         } else {
             return null;
         }

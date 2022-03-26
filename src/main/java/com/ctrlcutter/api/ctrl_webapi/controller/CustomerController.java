@@ -1,16 +1,23 @@
 package com.ctrlcutter.api.ctrl_webapi.controller;
 
-import com.ctrlcutter.api.ctrl_webapi.helper.ExistingParameters;
-import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
-import com.ctrlcutter.api.ctrl_webapi.models.Customer;
-import com.ctrlcutter.api.ctrl_webapi.services.CustomerService;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import com.ctrlcutter.api.ctrl_webapi.dto.CustomerDTO;
+import com.ctrlcutter.api.ctrl_webapi.dto.SessionDTO;
+import com.ctrlcutter.api.ctrl_webapi.exception.exceptions.AuthenticationException;
+import com.ctrlcutter.api.ctrl_webapi.exception.exceptions.ExistingParameterException;
+import com.ctrlcutter.api.ctrl_webapi.exception.exceptions.MissingParameterException;
+import com.ctrlcutter.api.ctrl_webapi.exception.exceptions.NoCustomerException;
+import com.ctrlcutter.api.ctrl_webapi.helper.ExistingParameters;
+import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
+import com.ctrlcutter.api.ctrl_webapi.models.Customer;
+import com.ctrlcutter.api.ctrl_webapi.services.CustomerService;
 
 @RestController
 @RequestMapping("/customer")
@@ -24,49 +31,49 @@ public class CustomerController {
     }
 
     @PostMapping(value = "/signup", produces = "application/json")
-    public ResponseEntity<Object> signup(@RequestBody Customer customer) {
+    public ResponseEntity<SessionDTO> signup(@RequestBody Customer customer) {
 
         if (StringUtils.isEmpty(customer.getUsername()) | StringUtils.isEmpty(customer.getEmail()) | StringUtils.isEmpty(customer.getPassword())) {
-            return new ResponseEntity<>("Missing data(username, email or password).", HttpStatus.BAD_REQUEST);
+            throw new MissingParameterException("Missing signup parameters");
         }
 
         ExistingParameters parameters = this.customerService.parametersExist(customer.getUsername(), customer.getEmail());
 
         if (parameters.areExisting()) {
-            return new ResponseEntity<>(parameters.getParameters(), HttpStatus.BAD_REQUEST);
+            throw new ExistingParameterException("Parameters already existing", parameters.getParameters());
         }
 
-        String sessionKey = this.customerService.createCustomer(customer);
+        SessionDTO session = new SessionDTO(this.customerService.createCustomer(customer));
 
-        return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
+        return new ResponseEntity<>(session, HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", produces = "application/json")
-    public ResponseEntity<Object> login(@RequestBody LoginForm loginForm) {
+    public ResponseEntity<SessionDTO> login(@RequestBody LoginForm loginForm) {
 
         if (StringUtils.isEmpty(loginForm.getEmail()) | StringUtils.isEmpty(loginForm.getPassword())) {
-            return new ResponseEntity<>("Missing login parameters(email, password).", HttpStatus.BAD_REQUEST);
+            throw new MissingParameterException("Missing login parameters");
         }
 
         if (!this.customerService.customerExists(loginForm.getEmail())) {
-            return new ResponseEntity<>("Customer does not exist.", HttpStatus.BAD_REQUEST);
+            throw new NoCustomerException("No customer with matching credentials found");
         }
 
-        String sessionKey = this.customerService.loginCustomer(loginForm);
+        SessionDTO session = new SessionDTO(this.customerService.loginCustomer(loginForm));
 
-        if (sessionKey != null) {
-            return new ResponseEntity<>("{\"session_key\": \"" + sessionKey + "\"}", HttpStatus.OK);
+        if (session.getSessionKey() != null) {
+            return new ResponseEntity<>(session, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Login failed. Wrong password.", HttpStatus.BAD_REQUEST);
+            throw new AuthenticationException("Login failed. Wrong password");
         }
     }
 
-    @PostMapping(value = "/logout", produces = "application/json")
-    public ResponseEntity<Object> logout(@RequestHeader Map<String, String> header) {
+    @DeleteMapping(value = "/logout", produces = "application/json")
+    public ResponseEntity<String> logout(@RequestHeader Map<String, String> header) {
         String sessionKey = header.get("sessionkey");
 
         if (sessionKey == null) {
-            return new ResponseEntity<>("Session key not provided. Try again", HttpStatus.BAD_REQUEST);
+            throw new MissingParameterException("Missing session key");
         }
 
         this.customerService.logoutCustomer(sessionKey);
@@ -74,18 +81,18 @@ public class CustomerController {
         return new ResponseEntity<>("Successfully logged out and deleted all sessions.", HttpStatus.OK);
     }
 
-    @PostMapping(value = "/customerData", produces = "application/json")
-    public ResponseEntity<Object> customerData(@RequestHeader Map<String, String> header) {
+    @GetMapping(value = "/customerData", produces = "application/json")
+    public ResponseEntity<CustomerDTO> customerData(@RequestHeader Map<String, String> header) {
         String sessionKey = header.get("sessionkey");
 
         if (sessionKey == null) {
-            return new ResponseEntity<>("Session key not provided. Try again", HttpStatus.BAD_REQUEST);
+            throw new MissingParameterException("Missing session key");
         }
 
-        Customer customer = this.customerService.getCustomerData(sessionKey);
+        CustomerDTO customer = this.customerService.getCustomerData(sessionKey);
 
         if (customer == null) {
-            return new ResponseEntity<>("Session invalid", HttpStatus.UNAUTHORIZED);
+            throw new AuthenticationException("Invalid Session");
         } else {
             return new ResponseEntity<>(customer, HttpStatus.OK);
         }
