@@ -3,10 +3,15 @@ package com.ctrlcutter.api.ctrl_webapi.helper;
 import org.springframework.lang.NonNull;
 
 public class LoginForm {
+
     @NonNull
     private String email;
     @NonNull
     private String password;
+
+    public LoginForm() {
+
+    }
 
     public LoginForm(String email, String password) {
         this.email = email;
