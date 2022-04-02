@@ -19,6 +19,7 @@ import com.ctrlcutter.api.ctrl_webapi.helper.LoginForm;
 import com.ctrlcutter.api.ctrl_webapi.models.Customer;
 import com.ctrlcutter.api.ctrl_webapi.services.CustomerService;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
