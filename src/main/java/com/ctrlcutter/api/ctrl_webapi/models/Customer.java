@@ -1,9 +1,13 @@
 package com.ctrlcutter.api.ctrl_webapi.models;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import java.sql.Timestamp;
+import java.util.List;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 public class Customer {
@@ -28,8 +32,11 @@ public class Customer {
     @OneToOne(mappedBy = "customer")
     private Session session;
 
-    public Customer() {
-    }
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("customer")
+    private List<Shortcut> shortcuts;
+
+    public Customer() {}
 
     public Customer(String username, String email, String password, Timestamp registration_date) {
         this.username = username;
@@ -78,8 +85,25 @@ public class Customer {
         this.registration_date = registration_date;
     }
 
+    public Session getSession() {
+        return this.session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    public List<Shortcut> getShortcuts() {
+        return this.shortcuts;
+    }
+
+    public void setShortcuts(List<Shortcut> shortcuts) {
+        this.shortcuts = shortcuts;
+    }
+
     @Override
     public String toString() {
-        return "Customer{" + "id=" + this.id + ", username='" + this.username + "', email='" + this.email + "', registration_date='" + this.registration_date + "'}";
+        return "Customer{" + "id=" + this.id + ", username='" + this.username + "', email='" + this.email + "', registration_date='" + this.registration_date
+                + "'}";
     }
 }
