@@ -78,7 +78,7 @@ public class CustomerController {
 
         this.customerService.logoutCustomer(sessionKey);
 
-        return new ResponseEntity<>("Successfully logged out and deleted all sessions.", HttpStatus.OK);
+        return new ResponseEntity<>("Successfully logged out and deleted all sessions", HttpStatus.OK);
     }
 
     @GetMapping(value = "/customerData", produces = "application/json")
@@ -92,7 +92,7 @@ public class CustomerController {
         CustomerDTO customer = this.customerService.getCustomerData(sessionKey);
 
         if (customer == null) {
-            throw new AuthenticationException("Invalid Session");
+            throw new AuthenticationException("Invalid session");
         } else {
             return new ResponseEntity<>(customer, HttpStatus.OK);
         }

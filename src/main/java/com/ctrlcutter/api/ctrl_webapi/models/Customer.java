@@ -30,6 +30,7 @@ public class Customer {
     private Timestamp registration_date;
 
     @OneToOne(mappedBy = "customer")
+    @JsonIgnoreProperties("customer")
     private Session session;
 
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

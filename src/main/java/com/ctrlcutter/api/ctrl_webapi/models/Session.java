@@ -1,9 +1,12 @@
 package com.ctrlcutter.api.ctrl_webapi.models;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import java.sql.Timestamp;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Sessions")
@@ -18,6 +21,7 @@ public class Session {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id", referencedColumnName = "customer_id")
+    @JsonIgnoreProperties("session")
     private Customer customer;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd' T 'hh:mm:ss")
@@ -26,8 +30,7 @@ public class Session {
     @DateTimeFormat(pattern = "yyyy-MM-dd' T 'hh:mm:ss")
     private Timestamp valid_until;
 
-    public Session() {
-    }
+    public Session() {}
 
     public Session(String session_key, Customer customer, Timestamp creation_time, Timestamp valid_until) {
         this.session_key = session_key;
@@ -78,6 +81,7 @@ public class Session {
 
     @Override
     public String toString() {
-        return "Session{" + "session_id=" + this.session_id + ", session_key='" + this.session_key + '\'' + ", customer=" + this.customer + ", creation_time=" + this.creation_time + ", valid_until=" + this.valid_until + '}';
+        return "Session{" + "session_id=" + this.session_id + ", session_key='" + this.session_key + '\'' + ", customer=" + this.customer + ", creation_time="
+                + this.creation_time + ", valid_until=" + this.valid_until + '}';
     }
 }
