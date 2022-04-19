@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +29,7 @@ public class PersistenceController {
         this.persistenceService = persistenceService;
     }
 
-    @PostMapping(value = "/saveAll", produces = "application/json")
+    @PostMapping(value = "/saveAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> saveAnonymizedScripts(@RequestHeader Map<String, String> header, @RequestBody List<AnonymizedScriptDTO> scripts) {
         String sessionKey = header.get("sessionkey");
 
@@ -45,7 +46,7 @@ public class PersistenceController {
         }
     }
 
-    @GetMapping(value = "/getAll", produces = "application/json")
+    @GetMapping(value = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Shortcut>> getAnonymizedScripts(@RequestHeader Map<String, String> header) {
         String sessionKey = header.get("sessionkey");
 
