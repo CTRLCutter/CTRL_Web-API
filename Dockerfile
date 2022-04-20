@@ -7,5 +7,5 @@ RUN mvn -f /home/app/pom.xml clean package -DskipTests
 # Package stage
 FROM openjdk:11-jdk-slim
 COPY --from=build /home/app/target/*.jar app.jar
-EXPOSE 8080
+EXPOSE 8089
 ENTRYPOINT ["java","-jar","app.jar"]
