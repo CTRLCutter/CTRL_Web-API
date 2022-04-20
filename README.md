@@ -20,7 +20,6 @@ Following environment variables are necessary:
 
 - Clone repo on your machine
 - Run ``docker build -t ctrlapi:web .`` in the repo to build the image
--
-Use ``docker run --name ctrlwebapi -d -p 8080:8089 -e DB_URL= -e DB_USER= -e DB_PASSWORD= -e API_USER= -e API_PASSWORD= ctrlapi:web``
+- Use ``docker run --name ctrlwebapi -d -p 8080:8089 -e DB_URL= -e DB_USER= -e DB_PASSWORD= -e API_USER= -e API_PASSWORD= ctrlapi:web``
 with defined environment variables
 - Container should start on port 8080
